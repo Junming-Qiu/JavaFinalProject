@@ -2,8 +2,16 @@ import java.io.*;
 import java.util.*;
 import java.net.*;
 
+import java.util.random.*;
+import java.util.stream.IntStream;
+
 public class Server{ 
-    public static void runServer(int port, int gridDim){
+    // Game configurations
+    static int port;
+    static int gridDim;
+    static double coinRatio;
+
+    public static void runServer(int port){
         try{
             ServerSocket ss = new ServerSocket(port);
 
@@ -14,19 +22,17 @@ public class Server{
             Socket player2 = ss.accept();
             System.out.println("Player 2 Connected");
 
-            // Both player outputs
-            PrintStream p1Out = new PrintStream(player1.getOutputStream());
-            PrintStream p2Out = new PrintStream(player2.getOutputStream());
+            // // Both player outputs
+            // PrintStream p1Out = new PrintStream(player1.getOutputStream());
+            // PrintStream p2Out = new PrintStream(player2.getOutputStream());
 
-            // PlayerListener settings
-            PlayerListener.grid = new int[gridDim][gridDim]; 
-
+            // Initialize new grid
+            GridItem.resetBoard(gridDim, coinRatio);
+            GridItem.printGrid();
+            
             // Start Listeners for both players
             new PlayerListener(player1, player2, 1).start();
             new PlayerListener(player2, player1, 2).start();
-
-            p1Out.println("I accepted you");
-            p2Out.println("I accepted you");
 
         } catch (IOException ex){
             System.out.println("Unable to bind to port " + port);
@@ -35,10 +41,11 @@ public class Server{
 
     public static void main(String[] args) {
         // Start up server
-        int port = 5190;
-        int gridDim = 10;
+        port = 5190;
+        gridDim = 10;
+        coinRatio = 0.2;
         System.out.println("Server Starting...");
-        runServer(port, gridDim);
+        runServer(port);
     }
 }
 
@@ -47,19 +54,14 @@ class PlayerListener extends Thread{
     Socket otherSocket;
     int playerID;
     Scanner listener;
-    static int[][] grid;
-
-    // Set up constants for grid state
-    final static int EMPTY = 0;
-    final static int PLAYER1 = 1;
-    final static int PLAYER2 = 2;
-    final static int COIN = 3;
-
+    PrintStream meOut;
+    PrintStream otherOut;
 
     PlayerListener(Socket newPlayerSocket, Socket newOtherSocket, int newPlayerID){
         // Save both player sockets
         playerSocket = newPlayerSocket;
         otherSocket = newOtherSocket;
+        playerID = newPlayerID;
 
         // Set up listener
         try{
@@ -68,25 +70,144 @@ class PlayerListener extends Thread{
             System.out.println(playerSocket.getInetAddress() + " error" + e.getMessage());
         }
 
-        // Init grid to all 0
-        resetGrid();
-    }
+        // Set up printStreams
+        try{
+            // Both player outputs
+            meOut = new PrintStream(playerSocket.getOutputStream());
+            otherOut = new PrintStream(otherSocket.getOutputStream());
 
-    public void resetGrid(){
-        for (int i=0; i<grid.length; i++){
-            for (int j=0; j<grid.length; j++){
-                grid[i][j] = 0;
-            }
+            meOut.println("I accepted you");
+        } catch (IOException ex){
+            System.out.println(ex); 
         }
     }
 
     @Override
-    public void run(){
+    public void run(){       
         String command;
         System.out.println("Starting ProcessPlayer");
         while (listener.hasNext()){
-            command = listener.nextLine();
-            System.out.println(command);
+            if (GridItem.hasCoin()){
+                System.out.println("Player " + playerID);
+                command = listener.nextLine();
+                System.out.println(command);
+                moveUpdate(command);
+            } else {
+                System.out.println("Game Done!");
+                break;
+            } 
         }
+    }
+
+    public synchronized void moveUpdate(String command){
+        GridItem.moveMe(playerID, command);
+        int[][] state = GridItem.getState();
+        meOut.println(state);
+        otherOut.println(state);
+        GridItem.printGrid();
+    }
+}
+
+// Threadsafe wrapper for grid
+class GridItem{
+    // Set up constants for grid state
+    final static int EMPTY = 0;
+    final static int PLAYER1 = 1;
+    final static int PLAYER2 = 2;
+    final static int COIN = 3;
+
+    // Raw data structure for grid
+    private static int[][] grid;
+
+    public static synchronized void resetBoard(int gridDim, Double coinRatio){
+        grid = new int[gridDim][gridDim];
+        Random rand = new Random();
+        
+        // First pass, disperse coins according to ratio
+        for (int i=0; i<gridDim; i++){
+            for (int j=0; j<gridDim; j++){
+                int coinVal = rand.nextInt(100);
+                boolean makeCoin = coinVal <= (100 * coinRatio);
+
+                if (makeCoin){
+                    grid[i][j] = GridItem.COIN;
+                } else {
+                    grid[i][j] = GridItem.EMPTY;
+                }
+            }
+        }
+
+        // Place players on opposite corners
+        grid[0][0] = GridItem.PLAYER1;
+        grid[gridDim-1][gridDim-1] = GridItem.PLAYER2;
+    }
+
+    // Debug function to visualize grid without UI
+    public static synchronized void printGrid(){
+        for (int i=0; i<grid.length; i++){
+            for (int j=0; j<grid.length; j++){
+                System.out.print(grid[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    public static synchronized int[][] getState(){        
+        return grid;
+    }
+
+    // Checks if spot to x direction of player has a coin, respecting boundaries of grid
+    public static synchronized boolean hasCoin(){
+        for (int i=0; i<grid.length; i++){
+            for (int j=0; j<grid.length; j++){
+                if (grid[i][j] == COIN){
+                   return true;
+                }
+            }
+        }  
+
+        return false;
+    }
+
+    // Moves me up, down, left, or right and collects coin if there is any
+    // Respects grid boundary
+    public static synchronized void moveMe(int playerNum, String direction){
+        // Find where player is
+        int[] position = new int[2];
+        for (int i=0; i<grid.length; i++){
+            for (int j=0; j<grid.length; j++){
+                if (grid[i][j] == playerNum){
+                    position[0] = i;
+                    position[1] = j;
+                }
+            }
+        } 
+
+        // Movement logic
+        if (direction.equals("LEFT")){
+            if (position[1] == 0) return;
+
+            grid[position[0]][position[1]] = EMPTY;
+            grid[position[0]][position[1] - 1] = playerNum;
+
+        } else if (direction.equals("RIGHT")){
+            if (position[1] == grid[0].length - 1) return;
+
+            grid[position[0]][position[1]] = EMPTY;
+            grid[position[0]][position[1] + 1] = playerNum;
+
+        } else if (direction.equals("UP")){
+            if (position[0] == 0) return;
+
+            grid[position[0]][position[1]] = EMPTY;
+            grid[position[0] - 1][position[1]] = playerNum;
+
+        } else if (direction.equals("DOWN")) {
+            if (position[0] == grid.length - 1) return;
+
+            grid[position[0]][position[1]] = EMPTY;
+            grid[position[0] + 1][position[1]] = playerNum;
+        }
+            
     }
 }

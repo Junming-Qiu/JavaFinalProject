@@ -2,7 +2,7 @@
 <h1>Epic 'Not a Mario Game' Game</h1>
 <h2>Game Rules</h2>
 <ol>
-    <li>2 Players connect and are placed randomly on a nxn grid</li>
+    <li>2 Players connect and are placed on opposite corners on a nxn grid</li>
     <li>Players are represented by a random color and can move across the grid 1 tile at a time in the up, down, left, right direction. If player is against a wall, it cannot move any further</li>
     <li>There are coins randomly scattered across the grid that players must collect</li>
     <li>The players must collect all the coins on the grid within a time limit and then meet each other on the same grid to win the game</li>
