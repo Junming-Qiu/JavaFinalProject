@@ -31,8 +31,19 @@ public class Server{
             GridItem.printGrid();
             
             // Start Listeners for both players
-            new PlayerListener(player1, player2, 1).start();
-            new PlayerListener(player2, player1, 2).start();
+            PlayerListener p1 = new PlayerListener(player1, player2, 1);
+            PlayerListener p2 = new PlayerListener(player2, player1, 2);
+            p1.start();
+            p2.start();
+
+            try{
+                p1.join();
+                p2.join();
+                ss.close();
+            } catch (Exception e){
+                System.out.println(e);
+            }
+
 
         } catch (IOException ex){
             System.out.println("Unable to bind to port " + port);
@@ -76,7 +87,7 @@ class PlayerListener extends Thread{
             meOut = new PrintStream(playerSocket.getOutputStream());
             otherOut = new PrintStream(otherSocket.getOutputStream());
 
-            meOut.println("I accepted you");
+            //meOut.println("I accepted you");
         } catch (IOException ex){
             System.out.println(ex); 
         }
@@ -101,7 +112,7 @@ class PlayerListener extends Thread{
 
     public synchronized void moveUpdate(String command){
         GridItem.moveMe(playerID, command);
-        int[][] state = GridItem.getState();
+        String state = GridItem.getState();
         meOut.println(state);
         otherOut.println(state);
         GridItem.printGrid();
@@ -118,8 +129,11 @@ class GridItem{
 
     // Raw data structure for grid
     private static int[][] grid;
+    private static int gridDim;
 
-    public static synchronized void resetBoard(int gridDim, Double coinRatio){
+    public static synchronized void resetBoard(int newGridDim, Double coinRatio){
+        gridDim = newGridDim;
+
         grid = new int[gridDim][gridDim];
         Random rand = new Random();
         
@@ -152,8 +166,19 @@ class GridItem{
         }
     }
 
-    public static synchronized int[][] getState(){        
-        return grid;
+    // Serialized return of grid
+    public static synchronized String getState(){        
+        String output = "";
+        for (int i=0; i<grid.length; i++){
+            for (int j=0; j<grid.length; j++){
+                output = output + (grid[i][j]) + "C";
+            }
+            output = output.substring(0, output.length()-1) + "R";
+        } 
+
+        output = output.substring(0, output.length()-1); 
+
+        return output;
     }
 
     // Checks if spot to x direction of player has a coin, respecting boundaries of grid
