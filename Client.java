@@ -41,7 +41,11 @@ class ClientL extends Thread{
 
     public static int[][] parseMessage(String message){
         if (message == ""){
-            return new int[10][10];
+            return new int[][]{
+                {0,1,0},
+                {0,0,0},
+                {0,0,2}
+            };
         }
         String[] rows = message.split("R");
         System.out.println(rows.length);
@@ -138,17 +142,11 @@ class ClientL extends Thread{
 }
 
 class FunPanel extends JPanel{
-    int xLoc;
-    int yLoc;
-    final int buttonWidth = 80;
-    final int buttonHeight = 25;
-    boolean init;
     int gridSize = 10;
     int[][] grid;
 
     FunPanel(int[][] g){
         super();
-        init = true;
         //During construction, the height and width will still be 0.
         grid = g;
     }
@@ -156,11 +154,6 @@ class FunPanel extends JPanel{
     @Override
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-        if (init){
-            xLoc = getSize().width/2;
-            yLoc = getSize().height/2;
-            init = false;
-        }
         g.setColor(Color.GREEN);
         /*
         g.draw3DRect(xLoc - buttonWidth/2, yLoc-buttonHeight/2, buttonWidth, buttonHeight, true);
@@ -170,6 +163,8 @@ class FunPanel extends JPanel{
         */
         int width = getWidth();
         int height = getHeight();
+
+        gridSize = grid.length;
 
         int cellW = width / gridSize;
         int cellH = height / gridSize;
@@ -188,14 +183,20 @@ class FunPanel extends JPanel{
             for (int j = 0; j < gridSize; j++) {
                 int item = grid[i][j];
                 if (item == 0) {
-                    g.setColor(Color.WHITE);
+                    //Empty
+                    //g.setColor(Color.WHITE);
+                    continue;
                 } else if (item == 1) {
+                    //Player 1
                     g.setColor(Color.RED);
                 } else if (item == 2) {
+                    //Player 2
                     g.setColor(Color.BLUE);
                 } else {
+                    //Coin
                     g.setColor(Color.YELLOW);
                 }
+                g.fillRect(i * cellW, j * cellH, cellW, cellH);
             }
         }
     }
