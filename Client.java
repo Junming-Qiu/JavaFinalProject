@@ -166,10 +166,15 @@ class ClientL extends Thread{
         JLabel crtl = new JLabel("Controls! Figure out who you are by just moving!");
         jp.add(crtl);
         jf.add(jp);
-        jp.add(up);
-        jp.add(dn);
-        jp.add(lt);
-        jp.add(rt);
+        JPanel jp3 = new JPanel(new GridLayout(2, 3));
+        jp3.setBackground(Color.CYAN);
+        jf.add(jp3);
+        jp3.add(new JLabel());
+        jp3.add(up);
+        jp3.add(new JLabel());
+        jp3.add(lt);
+        jp3.add(dn);
+        jp3.add(rt);
         // Results + Info section
         JPanel jp2 = new JPanel();
         JLabel result = new JLabel("Result");
