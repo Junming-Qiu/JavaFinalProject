@@ -64,6 +64,7 @@ public class Client {
         messageArea.append("This is a real time game!\n");
         messageArea.append("Work together with your non-copyrighted partner\n");
         messageArea.append("to collect all the coins on the map!\n");
+        messageArea.append("If your partner disconnects, you'll have to solo it yourself...\n");
         messageArea.append("Good luck!\n");
         jf.add(jp2);
         jp2.add(messageArea);
