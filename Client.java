@@ -8,25 +8,46 @@ import javax.swing.*;
 public class Client {
     public static void main(String[] args) {
         int port = 5190;
+        String host = "127.0.0.1";
 
-        try{
-            Socket s = new Socket("127.0.0.1", port);
-            PrintStream sout = new PrintStream(s.getOutputStream());
-            Scanner sin = new Scanner(s.getInputStream());
-
-            Scanner read = new Scanner(System.in);
-            String message;
-
-            new ClientL(sin, sout).start();
-
-            while (true){
-                message = read.nextLine();
-                sout.println(message);
+        // Window for connecting to host
+        JFrame jf = new JFrame("Client");
+        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jf.setSize(1000, 400);
+        jf.setVisible(true);
+        JPanel jp = new JPanel();
+        jp.setBackground(Color.LIGHT_GRAY);
+        jp.setLayout(new FlowLayout());
+        jf.add(jp);
+        //Set up text GUI stuff
+        JLabel inst = new JLabel("Input the hostname of the server to connect to below. Default is localhost");
+        JTextField messageField = new JTextField(20);
+        JButton sendButton = new JButton("Send");
+        sendButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String conn = messageField.getText();
+                System.out.println("Conn: " + conn);
+                if (conn.isEmpty()) {
+                    conn = host;
+                }
+                System.out.println("Connecting to: " + conn);
+                try{
+                    Socket s = new Socket(conn, port);
+                    PrintStream sout = new PrintStream(s.getOutputStream());
+                    Scanner sin = new Scanner(s.getInputStream());
+                    jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    jf.setVisible(false);
+                    // Start up a client handler
+                    new ClientL(sin, sout).start();
+                } catch (IOException ex){
+                    System.out.println("Connection Failed");
+                }
             }
-
-        } catch (IOException ex){
-            System.out.println("Connection Failed");
-        }
+        });
+        jp.add(inst, BorderLayout.NORTH);
+        jp.add(messageField, BorderLayout.CENTER);
+        jp.add(sendButton, BorderLayout.SOUTH);
     }
 }
 
