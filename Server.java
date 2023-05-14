@@ -10,6 +10,7 @@ public class Server{
     static int port;
     static int gridDim;
     static double coinRatio;
+    static int timerSecs;
 
     public static void runServer(int port){
         try{
@@ -22,20 +23,25 @@ public class Server{
             Socket player2 = ss.accept();
             System.out.println("Player 2 Connected");
 
-            // // Both player outputs
-            // PrintStream p1Out = new PrintStream(player1.getOutputStream());
-            // PrintStream p2Out = new PrintStream(player2.getOutputStream());
+            // Both player outputs
+            PrintStream p1Out = new PrintStream(player1.getOutputStream());
+            PrintStream p2Out = new PrintStream(player2.getOutputStream());
 
             // Initialize new grid
             GridItem.resetBoard(gridDim, coinRatio);
             GridItem.printGrid();
-            
+            p1Out.println(GridItem.getState());
+            p2Out.println(GridItem.getState());
+
             // Start Listeners for both players
             PlayerListener p1 = new PlayerListener(player1, player2, 1);
             PlayerListener p2 = new PlayerListener(player2, player1, 2);
             p1.start();
             p2.start();
 
+            // Start timer
+            new Timer(timerSecs * 1000, p1Out, p2Out, p1, p2).start();
+            
             try{
                 p1.join();
                 p2.join();
@@ -55,8 +61,13 @@ public class Server{
         port = 5190;
         gridDim = 10;
         coinRatio = 0.2;
-        System.out.println("Server Starting...");
-        runServer(port);
+        timerSecs = 30;
+
+        while (true) {
+            System.out.println("Server Starting...");
+            runServer(port);
+        }
+        
     }
 }
 
@@ -98,15 +109,21 @@ class PlayerListener extends Thread{
         String command;
         System.out.println("Starting ProcessPlayer");
         while (listener.hasNext()){
-            if (GridItem.hasCoin()){
-                System.out.println("Player " + playerID);
-                command = listener.nextLine();
-                System.out.println(command);
-                moveUpdate(command);
-            } else {
+
+            System.out.println("Player " + playerID);
+            command = listener.nextLine();
+            if (command.equals("STOP")) break;
+
+
+            System.out.println(command);
+            moveUpdate(command);
+
+            // Win game if cleared
+            if (!GridItem.hasCoin()) {
+                meOut.println("DONE=1");
+                otherOut.println("DONE=1");
                 System.out.println("Game Done!");
-                break;
-            } 
+            }
         }
     }
 
@@ -183,7 +200,7 @@ class GridItem{
         return output;
     }
 
-    // Checks if spot to x direction of player has a coin, respecting boundaries of grid
+    // Checks if board has coins
     public static synchronized boolean hasCoin(){
         for (int i=0; i<grid.length; i++){
             for (int j=0; j<grid.length; j++){
@@ -212,29 +229,75 @@ class GridItem{
 
         // Movement logic
         if (direction.equals("LEFT")){
+            // Can't move into wall
             if (position[1] == 0) return;
 
+            // Can't move into another player
+            if (grid[position[0]][position[1] - 1] == GridItem.PLAYER1) return;
+            if (grid[position[0]][position[1] - 1] == GridItem.PLAYER2) return; 
+            
             grid[position[0]][position[1]] = EMPTY;
             grid[position[0]][position[1] - 1] = playerNum;
 
         } else if (direction.equals("RIGHT")){
             if (position[1] == grid[0].length - 1) return;
+            if (grid[position[0]][position[1] + 1] == GridItem.PLAYER1) return;
+            if (grid[position[0]][position[1] + 1] == GridItem.PLAYER2) return; 
 
             grid[position[0]][position[1]] = EMPTY;
             grid[position[0]][position[1] + 1] = playerNum;
 
         } else if (direction.equals("UP")){
             if (position[0] == 0) return;
+            if (grid[position[0] - 1][position[1]] == GridItem.PLAYER1) return;
+            if (grid[position[0] - 1][position[1]] == GridItem.PLAYER2) return; 
 
             grid[position[0]][position[1]] = EMPTY;
             grid[position[0] - 1][position[1]] = playerNum;
 
         } else if (direction.equals("DOWN")) {
             if (position[0] == grid.length - 1) return;
+            if (grid[position[0] + 1][position[1]] == GridItem.PLAYER1) return;
+            if (grid[position[0] + 1][position[1]] == GridItem.PLAYER2) return;  
 
             grid[position[0]][position[1]] = EMPTY;
             grid[position[0] + 1][position[1]] = playerNum;
         }
             
+    }
+}
+
+class Timer extends Thread{
+    private int ms;
+    PrintStream p1Out;
+    PrintStream p2Out;
+    PlayerListener p1;
+    PlayerListener p2;
+
+
+    Timer(int newMS, PrintStream newP1Out, PrintStream newP2Out, PlayerListener newP1, PlayerListener newP2){
+        ms = newMS;
+        p1Out = newP1Out;
+        p2Out = newP2Out;
+        p1 = newP1;
+        p2 = newP2;
+    }
+
+    public void run(){
+        while (ms > 0){
+            try{
+                sleep(1000);
+                ms -= 1000;
+                p1Out.println("TIME=" + (ms / 1000));
+                p2Out.println("TIME=" + (ms / 1000));
+
+            } catch (Exception ex){
+                System.out.println(ex);
+            }
+        }   
+
+        // Fail Game
+        p1Out.println("DONE=0");
+        p2Out.println("DONE=0");
     }
 }

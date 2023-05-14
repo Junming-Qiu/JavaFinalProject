@@ -13,7 +13,7 @@ public class ClientTester {
             Scanner read = new Scanner(System.in);
             String message;
 
-            new Listener(sin).start();
+            new Listener(sin, sout).start();
 
             while (true){
                 message = read.nextLine();
@@ -28,9 +28,12 @@ public class ClientTester {
 
 class Listener extends Thread{
     Scanner listen;
+    PrintStream sout;
 
-    Listener(Scanner newListen){
+    Listener(Scanner newListen, PrintStream newSout){
         listen = newListen;
+        sout = newSout;
+
     }
 
     public int[][] parseMessage(String message){
@@ -67,10 +70,21 @@ class Listener extends Thread{
             //System.out.println(message);
             String state = message.split("=")[0];
             message = message.split("=")[1];
+            System.out.println(state);
 
-            if (state == "STATE"){
+            if (state.equals("STATE")){
                 grid = parseMessage(message);
                 printGrid(grid);
+            } else if (state.equals("DONE")){
+                if (message.equals("1")){
+                    System.out.println("You Won!");
+                } else if (message.equals("0")){
+                    System.out.println("You Lost!");
+                }
+                sout.println("STOP");
+                break;
+            } else if (state.equals("TIME")){
+                System.out.println("Time = " + message);
             }
         
         }
