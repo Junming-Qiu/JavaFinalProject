@@ -285,12 +285,12 @@ class Timer extends Thread{
 
     public void run(){
         while (ms > 0){
+            // Sleep for approx 1s and update timer
             try{
                 sleep(1000);
                 ms -= 1000;
                 p1Out.println("TIME=" + (ms / 1000));
                 p2Out.println("TIME=" + (ms / 1000));
-
             } catch (Exception ex){
                 System.out.println(ex);
             }
