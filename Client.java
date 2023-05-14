@@ -42,6 +42,7 @@ public class Client {
                     new ClientL(sin, sout).start();
                 } catch (IOException ex){
                     System.out.println("Connection Failed");
+                    inst.setText("Connection Failed. Please retry valid hostname.");
                 }
             }
         });
@@ -62,6 +63,7 @@ class ClientL extends Thread{
 
     public static int[][] parseMessage(String message){
         if (message.equals("")){
+            //Default
             return new int[][]{
                 {0,1,0},
                 {0,0,0},
