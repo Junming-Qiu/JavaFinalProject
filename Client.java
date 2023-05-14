@@ -46,18 +46,20 @@ public class Client {
                 }
             }
         });
-        jp.add(inst, BorderLayout.NORTH);
-        jp.add(messageField, BorderLayout.CENTER);
-        jp.add(sendButton, BorderLayout.SOUTH);
+        jp.add(inst);
+        jp.add(messageField);
+        jp.add(sendButton);
         // Game instructions
         JTextArea messageArea = new JTextArea();
         messageArea.setEditable(false);
-        messageArea.append("Instructions");
-        messageArea.append("Use the onscreen buttons to move");
-        messageArea.append("Map Key: Green is Lario, Red is Muigi, Yellow are coins");
-        messageArea.append("This is a real time game! Work together with your non-copyrighted partner");
-        messageArea.append("to collect all the coins on the map!");
-        messageArea.append("Good luck!");
+        messageArea.setLineWrap(true); // Enable line wrapping
+        messageArea.setWrapStyleWord(true); // Wrap at word boundaries
+        messageArea.append("Instructions\n");
+        messageArea.append("Use the onscreen buttons to move\n");
+        messageArea.append("Map Key: Green is Lario, Red is Muigi, Yellow are coins\n");
+        messageArea.append("This is a real time game! \nWork together with your non-copyrighted partner\n");
+        messageArea.append("to collect all the coins on the map!\n");
+        messageArea.append("Good luck!\n");
         jp.add(messageArea);
     }
 }
