@@ -48,6 +48,7 @@ public class Server{
             try{
                 p1.join();
                 p2.join();
+                t.join();
             } catch (Exception e){
                 System.out.println(e);
             }
@@ -121,7 +122,10 @@ class PlayerListener extends Thread{
 
             System.out.println("Player " + playerID);
             command = listener.nextLine();
-            if (command.equals("STOP")) break;
+            if (command.equals("STOP")) {
+                Timer.endTimer();
+                break;
+            }
 
 
             System.out.println(command);
@@ -313,5 +317,9 @@ class Timer extends Thread{
     // Returns time in seconds
     public static synchronized int getTime(){
         return ms / 1000;
+    }
+
+    public static synchronized void endTimer(){
+        ms = 0;
     }
 }

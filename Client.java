@@ -6,9 +6,11 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class Client {
+    static String host;
+    static int port;
     public static void main(String[] args) {
-        int port = 5190;
-        String host = "127.0.0.1";
+        port = 5190;
+        host = "127.0.0.1";
 
         // Window for connecting to host
         JFrame jf = new JFrame("\"Epic 'Not a Mario Game' Game Client");
@@ -171,11 +173,26 @@ class ClientL extends Thread{
         JPanel jp2 = new JPanel();
         JLabel result = new JLabel("Result");
         JLabel timer = new JLabel("Time Remaining: ");
-        JButton stop = new JButton("STOP my input");
+        JButton stop = new JButton("STOP AND RESTART GAME");
+        
         stop.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 sout.println("STOP");
+                System.out.println("Connecting to: " + Client.host);
+                try{
+                    Socket s = new Socket(Client.host, Client.port);
+                    PrintStream sout = new PrintStream(s.getOutputStream());
+                    Scanner sin = new Scanner(s.getInputStream());
+                    jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    jf.setVisible(false);
+
+                    // Start up a client handler
+                    new ClientL(sin, sout).start();
+                } catch (IOException ex){
+                    System.out.println("Connection Failed");
+                }
+
             }
         });
         jp2.setBackground(Color.PINK);
