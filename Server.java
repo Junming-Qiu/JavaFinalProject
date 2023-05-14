@@ -195,7 +195,7 @@ class GridItem{
 
         output = output.substring(0, output.length()-1); 
 
-        output = "STATE=" + output; 
+        output = "STATE=" + Timer.getTime() + "T" + output; 
 
         return output;
     }
@@ -268,7 +268,7 @@ class GridItem{
 }
 
 class Timer extends Thread{
-    private int ms;
+    private static int ms;
     PrintStream p1Out;
     PrintStream p2Out;
     PlayerListener p1;
@@ -299,5 +299,10 @@ class Timer extends Thread{
         // Fail Game
         p1Out.println("DONE=0");
         p2Out.println("DONE=0");
+    }
+
+    // Returns time in seconds
+    public static synchronized int getTime(){
+        return ms / 1000;
     }
 }

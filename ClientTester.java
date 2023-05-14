@@ -73,7 +73,9 @@ class Listener extends Thread{
             System.out.println(state);
 
             if (state.equals("STATE")){
-                grid = parseMessage(message);
+                String time = message.split("T")[0];
+                grid = parseMessage(message.split("T")[1]);
+                System.out.println(time);
                 printGrid(grid);
             } else if (state.equals("DONE")){
                 if (message.equals("1")){
