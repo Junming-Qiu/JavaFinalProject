@@ -28,7 +28,7 @@ DONE - end of game
 <ol>
     <li>When first launched, opens a connect screen displaying a text input to enter server IP. There is also a start button that will make the client attempt to connect to the server</li>
     <li>Once connected, client spins up a receiver thread to update its state such as player color based on the server messages.</li>
-    <li>Client will open a game window showing the grid using graphics, and also 4 buttons/keyboard controls to send a message to the server to update its state. Each player has a different color/shape, as determined by the server</li>
+    <li>Client will open a game window showing the grid using graphics, and also 4 button controls to send a message to the server to update its state. Each player has a different color/shape, as determined by the server</li>
     <li>The client is also receiving a timer message from the server on a separate thread, and updating this on the GUI as well</li>
     <li>Once the timer ends, the server will send an end of game message, in which the client will close the game window and show a win/lose screen</li>
 </ol>
