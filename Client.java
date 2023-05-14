@@ -209,13 +209,11 @@ class ClientL extends Thread{
             System.out.println(message);
             if (state.equals("STATE")) {
                 int time = Integer.parseInt(message.split("T")[0]);
-                /*
                 if (time > fp.time){
                     // Then this is an outdated message. Ignore it
                     System.out.println("Outdated message received. Curr: " + fp.time + " Received: " + time);
                     continue;
                 }
-                */
                 grid = parseMessage(message.split("T")[1]);
                 printGrid(grid);
                 System.out.println("Before update: " + fp.time);
