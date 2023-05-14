@@ -172,7 +172,7 @@ class ClientL extends Thread{
         // Results + Info section
         JPanel jp2 = new JPanel();
         JLabel result = new JLabel("Result");
-        JLabel timer = new JLabel("Time Remaining: ");
+        JLabel timer = new JLabel("WAITING for other player to join");
         JButton stop = new JButton("STOP AND RESTART GAME");
         
         stop.addActionListener(new ActionListener() {
