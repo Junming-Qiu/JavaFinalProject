@@ -11,11 +11,10 @@ public class Server{
     static int gridDim;
     static double coinRatio;
     static int timerSecs;
+    static ServerSocket ss;
 
     public static void runServer(int port){
         try{
-            ServerSocket ss = new ServerSocket(port);
-
             // Accept player 1
             Socket player1 = ss.accept();
             System.out.println("Player 1 Connected");
@@ -27,6 +26,15 @@ public class Server{
             PrintStream p1Out = new PrintStream(player1.getOutputStream());
             PrintStream p2Out = new PrintStream(player2.getOutputStream());
 
+            PlayerListener p1 = new PlayerListener(player1, player2, 1);
+            PlayerListener p2 = new PlayerListener(player2, player1, 2);
+
+            // Start timer
+            Timer t = new Timer(timerSecs * 1000, p1Out, p2Out, p1, p2);
+            System.out.println(Timer.getTime());
+
+            t.start();
+
             // Initialize new grid
             GridItem.resetBoard(gridDim, coinRatio);
             GridItem.printGrid();
@@ -34,18 +42,12 @@ public class Server{
             p2Out.println(GridItem.getState());
 
             // Start Listeners for both players
-            PlayerListener p1 = new PlayerListener(player1, player2, 1);
-            PlayerListener p2 = new PlayerListener(player2, player1, 2);
             p1.start();
             p2.start();
-
-            // Start timer
-            new Timer(timerSecs * 1000, p1Out, p2Out, p1, p2).start();
             
             try{
                 p1.join();
                 p2.join();
-                ss.close();
             } catch (Exception e){
                 System.out.println(e);
             }
@@ -62,6 +64,13 @@ public class Server{
         gridDim = 10;
         coinRatio = 0.2;
         timerSecs = 30;
+
+        try{
+            ss = new ServerSocket(port);
+        } catch (Exception ex){
+            System.out.println(ex);
+        }
+
 
         while (true) {
             System.out.println("Server Starting...");
@@ -285,12 +294,12 @@ class Timer extends Thread{
 
     public void run(){
         while (ms > 0){
-            // Sleep for approx 1s and update timer
             try{
                 sleep(1000);
                 ms -= 1000;
                 p1Out.println("TIME=" + (ms / 1000));
                 p2Out.println("TIME=" + (ms / 1000));
+
             } catch (Exception ex){
                 System.out.println(ex);
             }
