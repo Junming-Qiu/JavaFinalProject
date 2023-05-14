@@ -49,6 +49,16 @@ public class Client {
         jp.add(inst, BorderLayout.NORTH);
         jp.add(messageField, BorderLayout.CENTER);
         jp.add(sendButton, BorderLayout.SOUTH);
+        // Game instructions
+        JTextArea messageArea = new JTextArea();
+        messageArea.setEditable(false);
+        messageArea.append("Instructions");
+        messageArea.append("Use the onscreen buttons to move");
+        messageArea.append("Map Key: Green is Lario, Red is Muigi, Yellow are coins");
+        messageArea.append("This is a real time game! Work together with your non-copyrighted partner");
+        messageArea.append("to collect all the coins on the map!");
+        messageArea.append("Good luck!");
+        jp.add(messageArea);
     }
 }
 
@@ -143,14 +153,17 @@ class ClientL extends Thread{
         // Controls
         JPanel jp = new JPanel();
         jp.setBackground(Color.CYAN);
+        JLabel crtl = new JLabel("Controls! Figure out who you are by just moving!");
+        jp.add(crtl);
         jf.add(jp);
         jp.add(up);
         jp.add(dn);
         jp.add(lt);
         jp.add(rt);
-        // Results section
+        // Results + Info section
         JPanel jp2 = new JPanel();
         JLabel result = new JLabel("Result");
+        JLabel timer = new JLabel("Time Remaining: ");
         JButton stop = new JButton("STOP my input");
         stop.addActionListener(new ActionListener() {
             @Override
@@ -162,6 +175,7 @@ class ClientL extends Thread{
         jf.add(jp2);
         jp2.add(result);
         jp2.add(stop);
+        jp2.add(timer);
 
         while (sin.hasNext()){
             message = sin.nextLine();
@@ -198,7 +212,7 @@ class ClientL extends Thread{
                 stop.setVisible(true);
                 break;
             } else if (state.equals("TIME")){
-                //System.out.println("Time = " + message);
+                timer.setText("Time Remaining: " + message);
             }
         }
     }
