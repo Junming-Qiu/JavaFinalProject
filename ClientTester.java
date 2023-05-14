@@ -38,7 +38,7 @@ class Listener extends Thread{
 
     public int[][] parseMessage(String message){
         String[] rows = message.split("R");
-        System.out.println(rows.length);
+        //System.out.println(rows.length);
         int[][] board = new int[rows.length][rows[0].split("C").length];
 
         for (int i=0; i<rows.length; i++){

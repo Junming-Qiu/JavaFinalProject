@@ -34,7 +34,7 @@ DONE - end of game
 </ol>
 <p>
 LEFT, RIGHT, UP, DOWN - directions to travel
-STOP - tells server to stop
+STOP - tells server to stop current game and listen for new connections
 </p>
 
 <h2>Notes</h2>
