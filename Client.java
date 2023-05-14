@@ -11,9 +11,10 @@ public class Client {
         String host = "127.0.0.1";
 
         // Window for connecting to host
-        JFrame jf = new JFrame("Client");
+        JFrame jf = new JFrame("\"Epic 'Not a Mario Game' Game Client");
         jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jf.setSize(1000, 400);
+        jf.setLayout(new BoxLayout(jf.getContentPane(), BoxLayout.Y_AXIS));
         jf.setVisible(true);
         JPanel jp = new JPanel();
         jp.setBackground(Color.LIGHT_GRAY);
@@ -50,17 +51,21 @@ public class Client {
         jp.add(messageField);
         jp.add(sendButton);
         // Game instructions
-        JTextArea messageArea = new JTextArea();
+        JPanel jp2 = new JPanel();
+        jp2.setBackground(Color.GRAY);
+        JTextArea messageArea = new JTextArea(6, 55);
         messageArea.setEditable(false);
         messageArea.setLineWrap(true); // Enable line wrapping
         messageArea.setWrapStyleWord(true); // Wrap at word boundaries
         messageArea.append("Instructions\n");
-        messageArea.append("Use the onscreen buttons to move\n");
+        messageArea.append("Use the onscreen buttons to move.\n");
         messageArea.append("Map Key: Green is Lario, Red is Muigi, Yellow are coins\n");
-        messageArea.append("This is a real time game! \nWork together with your non-copyrighted partner\n");
+        messageArea.append("This is a real time game!\n");
+        messageArea.append("Work together with your non-copyrighted partner\n");
         messageArea.append("to collect all the coins on the map!\n");
         messageArea.append("Good luck!\n");
-        jp.add(messageArea);
+        jf.add(jp2);
+        jp2.add(messageArea);
     }
 }
 
