@@ -17,7 +17,6 @@ public class Client {
         jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jf.setSize(1000, 400);
         jf.setLayout(new BoxLayout(jf.getContentPane(), BoxLayout.Y_AXIS));
-        jf.setVisible(true);
         JPanel jp = new JPanel();
         jp.setBackground(Color.LIGHT_GRAY);
         jp.setLayout(new FlowLayout());
@@ -68,6 +67,8 @@ public class Client {
         messageArea.append("Good luck!\n");
         jf.add(jp2);
         jp2.add(messageArea);
+        // Show the window
+        jf.setVisible(true);
     }
 }
 
@@ -119,7 +120,6 @@ class ClientL extends Thread{
         JFrame jf = new JFrame("Epic 'Not a Mario Game' Game");
         jf.setSize(600, 600);
         jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        jf.setVisible(true);
         jf.setLayout(new BoxLayout(jf.getContentPane(), BoxLayout.Y_AXIS));
 
         // Direction buttons and their action listeners
@@ -200,6 +200,8 @@ class ClientL extends Thread{
         jp2.add(result);
         jp2.add(stop);
         jp2.add(timer);
+        // Show the window
+        jf.setVisible(true);
 
         while (sin.hasNext()){
             message = sin.nextLine();
