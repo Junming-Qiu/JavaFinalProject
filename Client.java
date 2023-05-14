@@ -48,7 +48,6 @@ class ClientL extends Thread{
             };
         }
         String[] rows = message.split("R");
-        //System.out.println(rows.length);
         int[][] board = new int[rows.length][rows[0].split("C").length];
 
         for (int i=0; i<rows.length; i++){
@@ -115,8 +114,10 @@ class ClientL extends Thread{
             }
         });
 
+        // Grid
         FunPanel fp = new FunPanel(grid);
         jf.add(fp);
+        // Controls
         JPanel jp = new JPanel();
         jp.setBackground(Color.CYAN);
         jf.add(jp);
@@ -124,21 +125,36 @@ class ClientL extends Thread{
         jp.add(dn);
         jp.add(lt);
         jp.add(rt);
+        // Results section
+        JPanel jp2 = new JPanel();
+        JLabel result = new JLabel("Result");
+        JButton stop = new JButton("STOP my input");
+        stop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sout.println("STOP");
+            }
+        });
+        jp2.setBackground(Color.PINK);
+        jf.add(jp2);
+        jp2.add(result);
+        jp2.add(stop);
 
         while (sin.hasNext()){
             message = sin.nextLine();
-            //System.out.println(message);
             // Read the state
             String state = message.split("=")[0];
             message = message.split("=")[1];
             System.out.println(message);
             if (state.equals("STATE")) {
                 int time = Integer.parseInt(message.split("T")[0]);
+                /*
                 if (time > fp.time){
                     // Then this is an outdated message. Ignore it
                     System.out.println("Outdated message received. Curr: " + fp.time + " Received: " + time);
                     continue;
                 }
+                */
                 grid = parseMessage(message.split("T")[1]);
                 printGrid(grid);
                 System.out.println("Before update: " + fp.time);
@@ -150,11 +166,13 @@ class ClientL extends Thread{
                 // Server has told us the game is done.
                 if (message.equals("1")){
                     System.out.println("You Won!");
+                    result.setText("You Won!");
                 } else if (message.equals("0")){
                     System.out.println("You Lost!");
+                    result.setText("You Lost!");
                 }
-                // Prompt the next game by responding to server
-                sout.println("STOP");
+                // Prompt the next game by responding to server via result Action Listener
+                stop.setVisible(true);
                 break;
             } else if (state.equals("TIME")){
                 //System.out.println("Time = " + message);
@@ -220,7 +238,7 @@ class FunPanel extends JPanel{
                     //Coin
                     g.setColor(Color.YELLOW);
                 }
-                g.fillRect(i * cellW, j * cellH, cellW, cellH);
+                g.fillRect(j * cellW, i * cellH, cellW, cellH);
             }
         }
     }
