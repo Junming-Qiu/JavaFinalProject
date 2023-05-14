@@ -81,6 +81,7 @@ class ClientL extends Thread{
         jf.setVisible(true);
         jf.setLayout(new BoxLayout(jf.getContentPane(), BoxLayout.Y_AXIS));
 
+        // Direction buttons and their action listeners
         JButton up = new JButton("UP");
         up.addActionListener(new ActionListener() {
             @Override
@@ -133,10 +134,16 @@ class ClientL extends Thread{
 
         while (sin.hasNext()){
             message = sin.nextLine();
-            //System.out.println(message);
-            grid = parseMessage(message);
-            printGrid(grid);
-            fp.repaint();
+            System.out.println(message);
+            // Read the state
+            String state = message.split("=")[0];
+            String msg = message.split("=")[1];
+            if (state == "STATE") {
+                grid = parseMessage(msg);
+                printGrid(grid);
+                fp.updateGrid(grid);
+                fp.repaint();
+            }
         }
     }
 }
@@ -149,23 +156,23 @@ class FunPanel extends JPanel{
         super();
         //During construction, the height and width will still be 0.
         grid = g;
+        gridSize = grid.length;
+    }
+
+    void updateGrid(int[][] newGrid){
+        grid = newGrid;
+        gridSize = newGrid.length;
     }
 
     @Override
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-        g.setColor(Color.GREEN);
-        /*
-        g.draw3DRect(xLoc - buttonWidth/2, yLoc-buttonHeight/2, buttonWidth, buttonHeight, true);
-        g.setColor(Color.black);
-        g.setFont(new Font("ARIAL", Font.PLAIN, 16));
-        g.drawString("Click HERE", xLoc - buttonHeight/3, yLoc);
-        */
+        // Grid color
+        g.setColor(Color.BLUE);
+
+        // Getting dimensions
         int width = getWidth();
         int height = getHeight();
-
-        gridSize = grid.length;
-
         int cellW = width / gridSize;
         int cellH = height / gridSize;
 
@@ -184,14 +191,13 @@ class FunPanel extends JPanel{
                 int item = grid[i][j];
                 if (item == 0) {
                     //Empty
-                    //g.setColor(Color.WHITE);
                     continue;
                 } else if (item == 1) {
                     //Player 1
                     g.setColor(Color.RED);
                 } else if (item == 2) {
                     //Player 2
-                    g.setColor(Color.BLUE);
+                    g.setColor(Color.GREEN);
                 } else {
                     //Coin
                     g.setColor(Color.YELLOW);
