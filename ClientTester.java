@@ -65,8 +65,14 @@ class Listener extends Thread{
         while (listen.hasNext()){
             message = listen.nextLine();
             //System.out.println(message);
-            grid = parseMessage(message);
-            printGrid(grid);
+            String state = message.split("=")[0];
+            message = message.split("=")[1];
+
+            if (state == "STATE"){
+                grid = parseMessage(message);
+                printGrid(grid);
+            }
+        
         }
     }
 

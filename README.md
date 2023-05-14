@@ -13,7 +13,7 @@
     <li>When 2 connections are found, it begins the game by spinning up a timer and receiver thread for each client</li>
     <li>Inits a thread safe array representing a nxn board to store game state</li>
     <li>Receive: receives a direction from each client concurrently and updates its own state according to game rules. If move is illegal, make no change</li>
-    <li>Send: First send player color/shape information to clients. For every update to the state, sends updated state to the client. A separate thread will sent each client information about the timer. This timer thread will also send whether or not the clients won or lost based on the server state when it gets to 0. Timer will send increments of 5min, 1min, 30sec...</li>
+    <li>Send: For every update to the state, sends updated state to the client. A separate thread will sent each client information about the timer. This timer thread will also send whether or not the clients won or lost based on the server state when it gets to 0. Timer will send increments of 5min, 1min, 30sec...</li>
     <li>Once the game ends, the server will close current connections and look for 2 new connections, repeating from step 1</li>
 </ol>
 

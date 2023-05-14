@@ -178,6 +178,8 @@ class GridItem{
 
         output = output.substring(0, output.length()-1); 
 
+        output = "STATE=" + output; 
+
         return output;
     }
 
