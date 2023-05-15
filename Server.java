@@ -123,6 +123,7 @@ class PlayerListener extends Thread{
             System.out.println("Player " + playerID);
             command = listener.nextLine();
             if (command.equals("STOP")) {
+                // End this session and restart
                 Timer.endTimer();
                 break;
             }
@@ -140,6 +141,9 @@ class PlayerListener extends Thread{
         }
     }
 
+    /*
+    Updates the grid given a user command
+    */
     public synchronized void moveUpdate(String command){
         GridItem.moveMe(playerID, command);
         String state = GridItem.getState();
@@ -299,6 +303,7 @@ class Timer extends Thread{
     public void run(){
         while (ms > 0){
             try{
+                // Sleep for 1 second and update the timer
                 sleep(1000);
                 ms -= 1000;
                 p1Out.println("TIME=" + (ms / 1000));
