@@ -166,6 +166,7 @@ class ClientL extends Thread{
         JLabel crtl = new JLabel("Controls! Figure out who you are by just moving!");
         jp.add(crtl);
         jf.add(jp);
+        // D-Pad Layout
         JPanel jp3 = new JPanel(new GridLayout(2, 3));
         jp3.setBackground(Color.CYAN);
         jf.add(jp3);
@@ -216,6 +217,7 @@ class ClientL extends Thread{
             message = message.split("=")[1];
             System.out.println(message);
             if (state.equals("STATE")) {
+                // New State received
                 int time = Integer.parseInt(message.split("T")[0]);
                 if (time > fp.time){
                     // Then this is an outdated message. Ignore it
@@ -224,9 +226,7 @@ class ClientL extends Thread{
                 }
                 grid = parseMessage(message.split("T")[1]);
                 printGrid(grid);
-                System.out.println("Before update: " + fp.time);
                 fp.update(grid, time);
-                System.out.println("After update: " + fp.time);
                 // Repaint the window
                 fp.repaint();
             } else if (state.equals("DONE")){
@@ -261,6 +261,9 @@ class FunPanel extends JPanel{
         time = Integer.MAX_VALUE;
     }
 
+    /*
+    Updates the fields of the FunPanel
+    */
     void update(int[][] newGrid, int newTime){
         grid = newGrid;
         gridSize = newGrid.length;
