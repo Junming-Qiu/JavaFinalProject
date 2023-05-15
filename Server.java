@@ -2,9 +2,6 @@ import java.io.*;
 import java.util.*;
 import java.net.*;
 
-import java.util.random.*;
-import java.util.stream.IntStream;
-
 public class Server{ 
     // Game configurations
     static int port;
